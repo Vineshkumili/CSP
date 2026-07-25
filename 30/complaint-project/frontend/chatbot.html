@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vignan's Institute of Information Technology - Admission Chatbot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: url('https://i.ytimg.com/vi/sq8ISpdiaLc/maxresdefault.jpg') no-repeat center center fixed; 
+            background-size: cover;
+        }
+        .chat-container { 
+            width: 100%; 
+            max-width: 600px; 
+            height: 100%; 
+            background: rgba(255, 255, 255, 0.9); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .chat-box { 
+            padding: 20px; 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .chat-message { 
+            padding: 10px; 
+            border-radius: 10px; 
+            margin: 5px 0; 
+            max-width: 80%; 
+            font-size: 18px; 
+        }
+        .user-message { 
+            margin-left: auto; 
+            background: #87CEEB; 
+            color: black; 
+        }
+        .bot-message { 
+            margin-right: auto; 
+            background: #000080; 
+            color: white; 
+        }
+        .chat-input { 
+            display: flex; 
+            padding: 10px; 
+            background: white; 
+            border-top: 1px solid #ccc; 
+            align-items: center;
+        }
+        .chat-input button { 
+            margin-left: 10px; 
+            padding: 10px 15px; 
+            background: #000080; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        .chat-input a { 
+            margin-left: 15px; 
+            color: #000080; 
+            text-decoration: none; 
+            font-size: 16px; 
+        }
+        .chat-input a:hover { 
+            text-decoration: underline; 
+        }
+        h1 { 
+            text-align: center; 
+            font-size: 32px; 
+            margin: 10px 0; 
+            color: darkviolet; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); 
+        }
+        .options { 
+            margin: 10px 20px; 
+            overflow-y: auto; 
+            max-height: 25%; 
+        }
+        .options label { 
+            display: block; 
+            margin: 5px 0; 
+            padding-left: 25px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            position: relative; 
+        }
+        .options input[type="radio"] { 
+            position: absolute; 
+            opacity: 0; 
+            cursor: pointer; 
+        }
+        .options .custom-radio { 
+            position: absolute; 
+            top: 50%; 
+            left: 0; 
+            transform: translateY(-50%); 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            border: 2px solid #000; 
+            background: white; 
+        }
+        .options input[type="radio"]:checked + .custom-radio { 
+            background: #87CEEB; 
+            border-color: #000080; 
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            border: 2px solid #1E90FF; 
+        }
+        th, td { 
+            border: 1px solid #4169E1; 
+            padding: 8px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #4682B4; 
+            color: white; 
+        }
+        td { 
+            background-color: #87CEFA; 
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Vignan's Institute of Information Technology - Admission Chatbot</h1>
+        <div class="chat-box" id="chat-box">
+            <div class="chat-message bot-message">Hello! Please select an option below.</div>
+        </div>
+        <div class="options" id="options-container"></div>
+        <div class="chat-input">
+            <button onclick="handleSelection()">Submit</button>
+            <a href="raji.html">For more information, click on this link (C:\Users\sree\OneDrive\Desktop\raji.html)</a>
+            <button onclick="document.location='csphome.html'">home</button>
+           </div>
+
+    <script>
+
+        const branches = ["CSE", "ECE", "AID", "MEC", "EEE", "CIV", "INF", "CAI", "CSC", "CSD", "ECM", "MBA", "MCA"];
+        const categories = ["OC", "EWS", "BC-A", "BC-B", "BC-C", "BC-D", "BC-E", "SC", "ST"];
+        const genders = ["Boys", "Girls"];
+        const initialOptions = [...branches, "documents required", "important dates", "fee structure"];
+
+        const responses = {
+            "documents required": "Required Documents: 10th & Inter certificates, Rank card, TC, Caste & Income certificates, Aadhar, etc.",
+            "important dates": {
+                "Application Start Date": "April 1, 2024",
+                "Last Date to Apply": "May 31, 2024",
+                "AP EAPCET Registration Timeline": "Mar 12, 2025 - Apr 15, 2025",
+                "AP EAPCET ADMIT CARD DATE": "May 07, 2025",
+                "AP EAPCET Exam Date": "May 16, 2025 - May 23, 2025",
+                "AP EAPCET Result Date": "Jun 14, 2025",
+                "AP EAPCET Counselling Date": "Jul 01, 2025 - Jul 07, 2025"
+            },
+            "fee structure": {
+                "B.Tech (Convener Quota)": "₹68,400 per year",
+                "B.Tech (Management Quota)": "applies according to the fee decided by the management",
+                "MBA": "applies according to the fee decided by the management",
+                "MCA": "applies according to the fee decided by the management",
+                "Hostel Fee": "₹90,000 per year (optional)",
+                "Transport Fee": "applies according to the fee decided by the management according to area (optional)"
+            },
+            "seat intake": {
+                "CIV": { "Convener Quota": 84, "Spot Admission": 1, "CAT-B": 12, "PIO": 9, "Total": 106 },
+                "EEE": { "Convener Quota": 91, "Spot Admission": 0, "CAT-B": 33, "PIO": 19, "Total": 143 },
+                "MEC": { "Convener Quota": 139, "Spot Admission": 4, "CAT-B": 53, "PIO": 5, "Total": 201 },
+                "ECE": { "Convener Quota": 183, "Spot Admission": 4, "CAT-B": 70, "PIO": 0, "Total": 257 },
+                "CSE": { "Convener Quota": 325, "Spot Admission": 4, "CAT-B": 120, "PIO": 1, "Total": 450 },
+                "INF": { "Convener Quota": 138, "Spot Admission": 0, "CAT-B": 52, "PIO": 0, "Total": 190 },
+                "AID": { "Convener Quota": 142, "Spot Admission": 2, "CAT-B": 54, "PIO": 0, "Total": 198 },
+                "CAI": { "Convener Quota": 141, "Spot Admission": 2, "CAT-B": 51, "PIO": 0, "Total": 194 },
+                "CSC": { "Convener Quota": 92, "Spot Admission": 0, "CAT-B": 31, "PIO": 0, "Total": 123 },
+                "CSD": { "Convener Quota": 94, "Spot Admission": 1, "CAT-B": 31, "PIO": 0, "Total": 126 },
+                "ECM": { "Convener Quota": 46, "Spot Admission": "1", "CAT-B": 18, "PIO": 0, "Total": 65 },
+                "MBA": { "Convener Quota": 62, "Spot Admission": 32, "CAT-B": 36, "PIO": 0, "Total": 130 },
+                "MCA": { "Convener Quota": 121, "Spot Admission": 23, "CAT-B": 54, "PIO": 0, "Total": 198 }
+            },
+            "hod": {
+                "CSE": "Dr. DINESH REDDY",
+                "ECE": "Dr. RAMESH BABU",
+                "AID": "Dr. T.V Madhusudhana Rao",
+                "MEC": "Mr. Rambabu Sarimalla",
+                "EEE": "Dr. PUDI SEKHAR",
+                "CIV": "Dr. GOVINDA LALAM",
+                "INF": "Dr. G. NEELIMA",
+                "CAI": "Dr. K. SWATHI",
+                "CSC": "Dr. K. SWATHI",
+                "CSD": "Dr. K. SWATHI",
+                "ECM": "DR. UMA MAHESHWARI",
+                "MBA": "Dr. B.CHANDRA",
+                "MCA": "Dr.CHANDRASEKHARAN DINESH"
+            }
+        };
+
+        const eapcetCutoffs = {
+            "CIV": { "OC": { "Boys": 71260, "Girls": 61598 }, "EWS": { "Boys": 131052, "Girls": 140795 }, "BC-A": { "Boys": 121961, "Girls": 120345 }, "BC-B": { "Boys": 162840, "Girls": 175856 }, "BC-C": { "Boys": 135219, "Girls": 135219 }, "BC-D": { "Boys": 97069, "Girls": 143084 }, "BC-E": { "Boys": 175374, "Girls": 175374 }, "SC": { "Boys": 159584, "Girls": 169614 }, "ST": { "Boys": 152954, "Girls": 156667 } },
+            "EEE": { "OC": { "Boys": 38517, "Girls": 52386 }, "EWS": { "Boys": 77155, "Girls": 92347 }, "BC-A": { "Boys": 75432, "Girls": 112127 }, "BC-B": { "Boys": 81382, "Girls": 86127 }, "BC-C": { "Boys": 81382, "Girls": 86127 }, "BC-D": { "Boys": 56168, "Girls": 53878 }, "BC-E": { "Boys": 147757, "Girls": 142592 }, "SC": { "Boys": 170302, "Girls": 173276 }, "ST": { "Boys": 158028, "Girls": "NA" } },
+            "MEC": { "OC": { "Boys": 43513, "Girls": 79761 }, "EWS": { "Boys": 129810, "Girls": 120931 }, "BC-A": { "Boys": 112417, "Girls": 170354 }, "BC-B": { "Boys": 133363, "Girls": 124589 }, "BC-C": { "Boys": 175032, "Girls": 175032 }, "BC-D": { "Boys": 75848, "Girls": 150668 }, "BC-E": { "Boys": 160470, "Girls": 160470 }, "SC": { "Boys": 174593, "Girls": 162121 }, "ST": { "Boys": 123844, "Girls": 177112 } },
+            "ECE": { "OC": { "Boys": 21738, "Girls": 26547 }, "EWS": { "Boys": 45912, "Girls": 40060 }, "BC-A": { "Boys": 35903, "Girls": 34771 }, "BC-B": { "Boys": 39870, "Girls": 38304 }, "BC-C": { "Boys": 58289, "Girls": 58289 }, "BC-D": { "Boys": 28931, "Girls": 28569 }, "BC-E": { "Boys": 79581, "Girls": 58614 }, "SC": { "Boys": 121200, "Girls": 116032 }, "ST": { "Boys": 176438, "Girls": 177852 } },
+            "CSE": { "OC": { "Boys": 13745, "Girls": 12108 }, "EWS": { "Boys": 25234, "Girls": 25518 }, "BC-A": { "Boys": 22531, "Girls": 19841 }, "BC-B": { "Boys": 29577, "Girls": 29956 }, "BC-C": { "Boys": 15081, "Girls": 31226 }, "BC-D": { "Boys": 17606, "Girls": 16870 }, "BC-E": { "Boys": 52983, "Girls": 57037 }, "SC": { "Boys": 51726, "Girls": 87060 }, "ST": { "Boys": 115599, "Girls": 117889 } },
+            "INF": { "OC": { "Boys": 19149, "Girls": 26994 }, "EWS": { "Boys": 48461, "Girls": 37782 }, "BC-A": { "Boys": 37447, "Girls": 47979 }, "BC-B": { "Boys": 58035, "Girls": 57703 }, "BC-C": { "Boys": 58035, "Girls": 57703 }, "BC-D": { "Boys": 33902, "Girls": 31990 }, "BC-E": { "Boys": 157459, "Girls": 117939 }, "SC": { "Boys": 149934, "Girls": 117294 }, "ST": { "Boys": 155666, "Girls": 155459 } },
+            "ECM": { "OC": { "Boys": 25140, "Girls": 19474 }, "EWS": { "Boys": 50379, "Girls": 56758 }, "BC-A": { "Boys": 52930, "Girls": 54887 }, "BC-B": { "Boys": 59644, "Girls": 133684 }, "BC-C": { "Boys": 59644, "Girls": 133684 }, "BC-D": { "Boys": 33161, "Girls": 32120 }, "BC-E": { "Boys": 131737, "Girls": 116699 }, "SC": { "Boys": 139174, "Girls": 150701 }, "ST": { "Boys": 164475, "Girls": 162512 } },
+            "AID": { "OC": { "Boys": 16649, "Girls": 16265 }, "EWS": { "Boys": 33761, "Girls": 27973 }, "BC-A": { "Boys": 33444, "Girls": 47337 }, "BC-B": { "Boys": 58225, "Girls": 57784 }, "BC-C": { "Boys": 157192, "Girls": 84071 }, "BC-D": { "Boys": 25255, "Girls": 26034 }, "BC-E": { "Boys": 125768, "Girls": 130344 }, "SC": { "Boys": 98267, "Girls": 127823 }, "ST": { "Boys": 134471, "Girls": 128845 } },
+            "CAI": { "OC": { "Boys": 16075, "Girls": 13385 }, "EWS": { "Boys": 35430, "Girls": 23480 }, "BC-A": { "Boys": 28429, "Girls": 41629 }, "BC-B": { "Boys": 30435, "Girls": 48154 }, "BC-C": { "Boys": 68822, "Girls": 47436 }, "BC-D": { "Boys": 23085, "Girls": 22069 }, "BC-E": { "Boys": 142777, "Girls": 103194 }, "SC": { "Boys": 129685, "Girls": 121492 }, "ST": { "Boys": 158310, "Girls": 161566 } },
+            "CSC": { "OC": { "Boys": 17294, "Girls": 12154 }, "EWS": { "Boys": 32646, "Girls": 30657 }, "BC-A": { "Boys": 33349, "Girls": 36464 }, "BC-B": { "Boys": 42187, "Girls": 39230 }, "BC-C": { "Boys": 42187, "Girls": 39230 }, "BC-D": { "Boys": 27897, "Girls": 25587 }, "BC-E": { "Boys": 161278, "Girls": "NA" }, "SC": { "Boys": 85438, "Girls": 115637 }, "ST": { "Boys": 126137, "Girls": 175516 } },
+            "CSD": { "OC": { "Boys": 18888, "Girls": 16772 }, "EWS": { "Boys": 32850, "Girls": 32262 }, "BC-A": { "Boys": 39938, "Girls": 30720 }, "BC-B": { "Boys": 39003, "Girls": 30319 }, "BC-C": { "Boys": 46615, "Girls": 30319 }, "BC-D": { "Boys": 24320, "Girls": 25405 }, "BC-E": { "Boys": 98315, "Girls": 53719 }, "SC": { "Boys": 84687, "Girls": 86971 }, "ST": { "Boys": 153926, "Girls": 167900 } },
+            "MBA": { "OC": { "Boys": "NA", "Girls": "NA" }, "EWS": { "Boys": "NA", "Girls": "NA" }, "BC-A": { "Boys": "NA", "Girls": "NA" }, "BC-B": { "Boys": "NA", "Girls": "NA" }, "BC-C": { "Boys": "NA", "Girls": "NA" }, "BC-D": { "Boys": "NA", "Girls": "NA" }, "BC-E": { "Boys": "NA", "Girls": "NA" }, "SC": { "Boys": "NA", "Girls": "NA" }, "ST": { "Boys": "NA", "Girls": "NA" } },
+            "MCA": { "OC": { "Boys": "NA", "Girls": "NA" }, "EWS": { "Boys": "NA", "Girls": "NA" }, "BC-A": { "Boys": "NA", "Girls": "NA" }, "BC-B": { "Boys": "NA", "Girls": "NA" }, "BC-C": { "Boys": "NA", "Girls": "NA" }, "BC-D": { "Boys": "NA", "Girls": "NA" }, "BC-E": { "Boys": "NA", "Girls": "NA" }, "SC": { "Boys": "NA", "Girls": "NA" }, "ST": { "Boys": "NA", "Girls": "NA" } }
+        };
+
+        const ecetCutoffs = {
+            "CIV": { "OC": { "Boys": 156, "Girls": 156 }, "EWS": { "Boys": 1740, "Girls": 2490 }, "BC-A": { "Boys": 414, "Girls": 414 }, "BC-B": { "Boys": 463, "Girls": 822 }, "BC-C": { "Boys": 463, "Girls": 822 }, "BC-D": { "Boys": 453, "Girls": 379 }, "BC-E": { "Boys": 701, "Girls": 1128 }, "SC": { "Boys": 1951, "Girls": 18846 }, "ST": { "Boys": 897, "Girls": "NA" } },
+            "EEE": { "OC": { "Boys": 122, "Girls": 175 }, "EWS": { "Boys": 122, "Girls": 175 }, "BC-A": { "Boys": 338, "Girls": 338 }, "BC-B": { "Boys": 122, "Girls": 122 }, "BC-C": { "Boys": 122, "Girls": 122 }, "BC-D": { "Boys": 154, "Girls": 245 }, "BC-E": { "Boys": 154, "Girls": 245 }, "SC": { "Boys": 1151, "Girls": 1151 }, "ST": { "Boys": 2969, "Girls": 2969 } },
+            "MEC": { "OC": { "Boys": 127, "Girls": 127 }, "EWS": { "Boys": 267, "Girls": 267 }, "BC-A": { "Boys": 267, "Girls": 267 }, "BC-B": { "Boys": 438, "Girls": 438 }, "BC-C": { "Boys": 3308, "Girls": 3308 }, "BC-D": { "Boys": 202, "Girls": 202 }, "BC-E": { "Boys": 1191, "Girls": 1191 }, "SC": { "Boys": 548, "Girls": 548 }, "ST": { "Boys": 828, "Girls": 828 } },
+            "ECE": { "OC": { "Boys": 329, "Girls": 329 }, "EWS": { "Boys": 329, "Girls": 329 }, "BC-A": { "Boys": 543, "Girls": 532 }, "BC-B": { "Boys": 407, "Girls": 1125 }, "BC-C": { "Boys": 407, "Girls": 407 }, "BC-D": { "Boys": 455, "Girls": 533 }, "BC-E": { "Boys": 7626, "Girls": 7626 }, "SC": { "Boys": 215, "Girls": 2108 }, "ST": { "Boys": 3455, "Girls": 3455 } },
+            "CSE": { "OC": { "Boys": 257, "Girls": 204 }, "EWS": { "Boys": 257, "Girls": 204 }, "BC-A": { "Boys": 939, "Girls": 497 }, "BC-B": { "Boys": 770, "Girls": 376 }, "BC-C": { "Boys": 770, "Girls": 376 }, "BC-D": { "Boys": 310, "Girls": 285 }, "BC-E": { "Boys": 1251, "Girls": 1251 }, "SC": { "Boys": 1472, "Girls": 3402 }, "ST": { "Boys": 5104, "Girls": 5104 } },
+            "INF": { "OC": { "Boys": 1317, "Girls": 1572 }, "EWS": { "Boys": 1317, "Girls": 1572 }, "BC-A": { "Boys": 2896, "Girls": 3144 }, "BC-B": { "Boys": 1546, "Girls": 2351 }, "BC-C": { "Boys": 1546, "Girls": 2351 }, "BC-D": { "Boys": 1492, "Girls": 1614 }, "BC-E": { "Boys": 1492, "Girls": 1614 }, "SC": { "Boys": 5240, "Girls": 4728 }, "ST": { "Boys": 4537, "Girls": "NA" } },
+            "ECM": { "OC": { "Boys": 1339, "Girls": 3518 }, "EWS": { "Boys": 3212, "Girls": 3212 }, "BC-A": { "Boys": 3630, "Girls": 3630 }, "BC-B": { "Boys": 1502, "Girls": 1502 }, "BC-C": { "Boys": 1502 , "Girls": 1502 }, "BC-D": { "Boys": 1339, "Girls": 3284 }, "BC-E": { "Boys": 1339, "Girls": 3284 }, "SC": { "Boys": 4876, "Girls": 4876 }, "ST": { "Boys": 4876, "Girls": 4876 } },
+            "AID": { "OC": { "Boys": 1496, "Girls": 1610 }, "EWS": { "Boys": 1496, "Girls": 1690 }, "BC-A": { "Boys": 1496, "Girls": 1610 }, "BC-B": { "Boys": 1496, "Girls": 1460 }, "BC-C": { "Boys": 1496, "Girls": 1460 }, "BC-D": { "Boys": 1165, "Girls": 516 }, "BC-E": { "Boys": 1165, "Girls": 516 }, "SC": { "Boys": 3749, "Girls": 3749 }, "ST": { "Boys": 3749, "Girls": 3749 } },
+            "CAI": { "OC": { "Boys": 4768, "Girls": 2570 }, "EWS": { "Boys": 4768, "Girls": 2570 }, "BC-A": { "Boys": 1335, "Girls": 1335 }, "BC-B": { "Boys": 1380, "Girls": 1380 }, "BC-C": { "Boys": 1335, "Girls": 1380 }, "BC-D": { "Boys": 1335, "Girls": 1009 }, "BC-E": { "Boys": 2325, "Girls": 2325 }, "SC": { "Boys": 2325, "Girls": 1790 }, "ST": { "Boys": 839, "Girls": 839 } },
+            "CSC": { "OC": { "Boys": 765, "Girls": 765 }, "EWS": { "Boys": 765, "Girls": 765 }, "BC-A": { "Boys": 765, "Girls": 2704 }, "BC-B": { "Boys": 2181, "Girls": 2181 }, "BC-C": { "Boys": 2181, "Girls": 2181 }, "BC-D": { "Boys": 1367, "Girls": 1179 }, "BC-E": { "Boys": 1367, "Girls": 1179 }, "SC": { "Boys": 1742, "Girls": 4280 }, "ST": { "Boys": 3397, "Girls": "NA" } },
+            "CSD": { "OC": { "Boys": 762, "Girls": 661 }, "EWS": { "Boys": 762, "Girls": 661 }, "BC-A": { "Boys": 1032, "Girls": 1032 }, "BC-B": { "Boys": 1032, "Girls": 1032 }, "BC-C": { "Boys": 1032, "Girls": 1032 }, "BC-D": { "Boys": 330, "Girls": 762 }, "BC-E": { "Boys": 2851, "Girls": 2882 }, "SC": { "Boys": 2715, "Girls": 2000 }, "ST": { "Boys": 5515, "Girls": 588 } },
+            "MBA": { "OC": { "Boys": "NA", "Girls": "NA" }, "EWS": { "Boys": "NA", "Girls": "NA" }, "BC-A": { "Boys": "NA", "Girls": "NA" }, "BC-B": { "Boys": "NA", "Girls": "NA" }, "BC-C": { "Boys": "NA", "Girls": "NA" }, "BC-D": { "Boys": "NA", "Girls": "NA" }, "BC-E": { "Boys": "NA", "Girls": "NA" }, "SC": { "Boys": "NA", "Girls": "NA" }, "ST": { "Boys": "NA", "Girls": "NA" } },
+            "MCA": { "OC": { "Boys": "NA", "Girls": "NA" }, "EWS": { "Boys": "NA", "Girls": "NA" }, "BC-A": { "Boys": "NA", "Girls": "NA" }, "BC-B": { "Boys": "NA", "Girls": "NA" }, "BC-C": { "Boys": "NA", "Girls": "NA" }, "BC-D": { "Boys": "NA", "Girls": "NA" }, "BC-E": { "Boys": "NA", "Girls": "NA" }, "SC": { "Boys": "NA", "Girls": "NA" }, "ST": { "Boys": "NA", "Girls": "NA" } }
+        };
+
+        const icetCutoffs = {
+            "MBA": { "OC": { "Boys": 4932, "Girls": 3742 }, "EWS": { "Boys": 21750, "Girls": 28041 }, "BC-A": { "Boys": 15670, "Girls": 7033 }, "BC-B": { "Boys": 15274, "Girls": 6930 }, "BC-C": { "Boys": 5478, "Girls": 4964 }, "BC-D": { "Boys": 9201, "Girls": 8771 }, "BC-E": { "Boys": 19350, "Girls": 16606 }, "SC": { "Boys": 30900, "Girls": 36613 }, "ST": { "Boys": 25978, "Girls": 34383 } },
+            "MCA": { "OC": { "Boys": 5345, "Girls": 3900 }, "EWS": { "Boys": 13429, "Girls": 18934 }, "BC-A": { "Boys": 7757, "Girls": 6609 }, "BC-B": { "Boys": 9208, "Girls": 8511 }, "BC-C": { "Boys": 5878, "Girls": 7895 }, "BC-D": { "Boys": 7302, "Girls": 7105 }, "BC-E": { "Boys": 21698, "Girls": 5798 }, "SC": { "Boys": 22220, "Girls": 37385 }, "ST": { "Boys": 28251, "Girls": 30000 } }
+        };
+// DOM Elements
+const chatBox = document.getElementById('chat-box');
+const optionsContainer = document.getElementById('options-container');
+
+// TTS Function
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// State Management
+let state = { 
+    step: "initial", 
+    selectedBranch: null, 
+    selectedCutoffType: null, 
+    selectedCategory: null 
+};
+
+// Core Functions
+function loadOptions(options, name) {
+    optionsContainer.innerHTML = '';
+    options.forEach(option => {
+        optionsContainer.innerHTML += `
+            <label><input type="radio" name="${name}" value="${option}"><span class="custom-radio"></span>${option}</label>
+        `;
+    });
+}
+
+function addMessage(message, className) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('chat-message', className);
+    messageDiv.innerHTML = message;
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // Speak only bot messages
+    if (className === 'bot-message') {
+        speak(messageDiv.textContent || messageDiv.innerText || '');
+    }
+}
+
+function handleSelection() {
+    const selectedOption = document.querySelector(`input[name="${state.step === 'initial' ? 'initial' : state.step}"]:checked`);
+    if (!selectedOption) { 
+        addMessage("Please select an option!", 'bot-message'); 
+        return; 
+    }
+
+    const value = selectedOption.value;
+    addMessage(value, 'user-message');
+
+    if (state.step === "initial") {
+        if (branches.includes(value)) {
+            state.selectedBranch = value;
+            state.step = "branchOption";
+            addMessage(`Selected branch: ${value}. Choose an option:`, 'bot-message');
+            loadOptions(["cutoff", "hod", "seat intake"], "branchOption");
+        } else if (value === "documents required") {
+            addMessage(responses["documents required"], 'bot-message');
+            loadInitialOptions();
+        } else if (value === "important dates") {
+            const dates = responses["important dates"];
+            let botResponse = '<table>';
+            for (const [key, val] of Object.entries(dates)) {
+                botResponse += `<tr><th>${key}</th><td>${val}</td></tr>`;
+            }
+            botResponse += '</table>';
+            addMessage(botResponse, 'bot-message');
+            loadInitialOptions();
+        } else if (value === "fee structure") {
+            const fees = responses["fee structure"];
+            let botResponse = '<table>';
+            for (const [key, val] of Object.entries(fees)) {
+                botResponse += `<tr><th>${key}</th><td>${val}</td></tr>`;
+            }
+            botResponse += '</table>';
+            addMessage(botResponse, 'bot-message');
+            loadInitialOptions();
+        }
+    } else if (state.step === "branchOption") {
+        if (value === "cutoff") {
+            state.step = "cutoffType";
+            addMessage("Select cutoff type:", 'bot-message');
+            const cutoffTypes = ["eapcet", "ecet"];
+            if (state.selectedBranch === "MBA" || state.selectedBranch === "MCA") cutoffTypes.push("icet");
+            loadOptions(cutoffTypes.map(t => t.toUpperCase()), "cutoffType");
+        } else if (value === "hod") {
+            const hodName = responses["hod"][state.selectedBranch];
+            addMessage(`Head of department of ${state.selectedBranch}: ${hodName}`, 'bot-message');
+            state.step = "initial";
+            loadInitialOptions();
+        } else if (value === "seat intake") {
+            const intake = responses["seat intake"][state.selectedBranch];
+            let botResponse = `<table><tr><th>Category</th><th>Seats</th></tr>`;
+            for (const [key, val] of Object.entries(intake)) {
+                botResponse += `<tr><td>${key}</td><td>${val}</td></tr>`;
+            }
+            botResponse += '</table>';
+            addMessage(botResponse, 'bot-message');
+            state.step = "initial";
+            loadInitialOptions();
+        }
+    } else if (state.step === "cutoffType") {
+        state.selectedCutoffType = value.toLowerCase();
+        state.step = "category";
+        addMessage("Select a category:", 'bot-message');
+        loadOptions(categories, "category");
+    } else if (state.step === "category") {
+        state.selectedCategory = value;
+        state.step = "gender";
+        addMessage("Select gender:", 'bot-message');
+        loadOptions(genders, "gender");
+    } else if (state.step === "gender") {
+        const cutoffData = state.selectedCutoffType === "eapcet" ? eapcetCutoffs : 
+                         state.selectedCutoffType === "ecet" ? ecetCutoffs : icetCutoffs;
+        const rank = cutoffData[state.selectedBranch]?.[state.selectedCategory]?.[value] || "NA";
+        addMessage(`Cutoff rank for ${state.selectedBranch} (${state.selectedCutoffType.toUpperCase()}, ${state.selectedCategory}, ${value}): ${rank === "NA" ? "Not available" : rank}`, 'bot-message');
+        state.step = "initial";
+        loadInitialOptions();
+    }
+}
+
+function loadInitialOptions() {
+    state.step = "initial";
+    loadOptions(initialOptions, "initial");
+}
+
+// Initialization
+window.onload = loadInitialOptions;
+    </script>
+</body>
+</html>
