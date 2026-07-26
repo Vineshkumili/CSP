@@ -21,11 +21,11 @@ app.use('/uploads', express.static('uploads'));
 
 // Serve static frontend files
 const path = require('path');
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Default route to load home page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/csphome.html'));
+  res.sendFile(path.join(__dirname, 'frontend/csphome.html'));
 });
 
 // Use complaints route

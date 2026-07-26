@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Cutoff and Intake Graphs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        #chartContainer {
+            width: 90%;
+            max-width: 1200px;
+            height: 500px;
+            margin: 20px auto;
+        }
+        .total {
+            max-width: 1300px;
+            margin: 0 auto;
+            box-shadow: 0 0 5px grey;
+            border: 3px solid rgb(11, 47, 133);
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+        }
+        .box, .box2 {
+            box-shadow: 0 0 5px grey;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+        }
+        .box:hover, .box2:hover {
+            box-shadow: 0 0 10px rgb(11, 47, 133);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin: 0 0 15px 0;
+        }
+        button {
+            background-color: rgb(11, 47, 133);
+            color: white;
+            padding: 8px 15px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: white;
+            color: rgb(11, 47, 133);
+            border: 2px solid rgb(11, 47, 133);
+        }
+        canvas#myChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        @media (max-width: 768px) {
+            #chartContainer {
+                width: 100%;
+                height: 400px;
+            }
+            .box, .box2 {
+                margin: 10px 0;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            button {
+                font-size: 1rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="total">
+    <center>
+        <h1 style="color:white; background-color:rgb(11, 47, 133); padding: 15px; border-radius: 5px;">Branch Cutoff and Intake Graphs</h1>
+    </center>
+    <div class="box">
+        <h1 style="color:rgb(11, 47, 133);">Select Branch:</h1>
+        <div style="font-size:25px;">
+            <label><input type="radio" name="branch" value="CIV" onclick="updateGraph()"> CIV</label>
+            <label><input type="radio" name="branch" value="EEE" onclick="updateGraph()"> EEE</label>
+            <label><input type="radio" name="branch" value="MEC" onclick="updateGraph()"> MEC</label>
+            <label><input type="radio" name="branch" value="ECE" onclick="updateGraph()"> ECE</label>
+            <label><input type="radio" name="branch" value="CSE" onclick="updateGraph()" checked> CSE</label>
+            <label><input type="radio" name="branch" value="INF" onclick="updateGraph()"> INF</label>
+            <label><input type="radio" name="branch" value="ECM" onclick="updateGraph()"> ECM</label>
+            <label><input type="radio" name="branch" value="AID" onclick="updateGraph()"> AID</label>
+            <label><input type="radio" name="branch" value="CAI" onclick="updateGraph()"> CAI</label>
+            <label><input type="radio" name="branch" value="CSC" onclick="updateGraph()"> CSC</label>
+            <label><input type="radio" name="branch" value="CSD" onclick="updateGraph()"> CSD</label>
+            <br><br>
+        </div>
+        <h1 style="color:rgb(11, 47, 133);">Select Data Type:</h1>
+        <div style="font-size:25px;">
+            <label><input type="radio" name="dataType" value="cutoff" onclick="updateGraph()" checked> Boys' Cutoff Ranks</label>
+            <label><input type="radio" name="dataType" value="girlsCutoff" onclick="updateGraph()"> Girls' Cutoff Ranks</label>
+            <label><input type="radio" name="dataType" value="intake" onclick="updateGraph()"> Seat Intake</label>
+            <label><input type="radio" name="dataType" value="highestSeats" onclick="updateGraph()"> View Highest Seats Allocated</label><br><br>
+        </div>
+    </div>
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="box2">
+        <h1 style="color:rgb(11, 47, 133);">Check Branch Eligibility</h1>
+        <label style="color:rgb(11, 47, 133);font-size:25px;">Enter Your Rank: <input type="number" id="userRank"></label><br><br>
+        <label style="color:rgb(11, 47, 133);font-size:25px;">Select Category:
+            <select id="userCategory">
+                <option value="OC">OC</option>
+                <option value="EWS">EWS</option>
+                <option value="BC-A">BC-A</option>
+                <option value="BC-B">BC-B</option>
+                <option value="BC-C">BC-C</option>
+                <option value="BC-D">BC-D</option>
+                <option value="BC-E">BC-E</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+            </select>
+        </label><br><br>
+        <label style="color:rgb(11, 47, 133);font-size:25px;">Select Gender:
+            <select id="userGender">
+                <option value="Boy">Boy</option>
+                <option value="Girl">Girl</option>
+            </select>
+        </label><br><br>
+        <button onclick="checkEligibility()">Check Eligibility</button>
+        <div id="eligibilityResult" style="margin-top: 25px; font-weight: bold;"></div>
+        <button onclick="document.location='csphome.html'">home</button>
+    </div>
+</div>
+
+<script>
+    const cutoffData = {
+        "CIV": [71260, 61598, 131052, 140795, 121961, 120345, 162840, 175856, 135219, 97069, 143084, 175374, 159584, 169614, 152954, 156667],
+        "EEE": [38517, 52386, 77155, 92347, 75432, 112127, 81382, 86127, 56168, 53878, 147757, 142592, 170302, 173276, 158028],
+        "MEC": [43513, 79761, 129810, 120931, 112417, 170354, 133363, 124589, 75848, 150668, 160470, 174593, 162121, 123844, 177112],
+        "ECE": [21738, 26547, 45912, 40060, 35903, 34771, 39870, 38304, 28931, 28569, 79581, 58614, 121200, 116032, 176438, 177852],
+        "CSE": [13745, 12108, 25234, 25518, 22531, 19841, 29577, 29956, 17606, 16870, 52983, 57037, 51726, 87060, 115599, 117889],
+        "INF": [19149, 26994, 48461, 37782, 37447, 47979, 58035, 57703, 33902, 31990, 157459, 117939, 149934, 117294, 155666, 155459],
+        "ECM": [25140, 19474, 50379, 56758, 52930, 54887, 59644, 133684, 33161, 32120, 131737, 116699, 139174, 150701, 164475, 162512],
+        "AID": [16649, 16265, 33761, 27973, 33444, 47337, 58225, 57784, 25255, 26034, 125768, 130344, 98267, 127823, 134471, 128845],
+        "CAI": [16075, 13385, 35430, 23480, 28429, 41629, 30435, 48154, 23085, 22069, 142777, 103194, 129685, 121492, 158310, 161566],
+        "CSC": [17294, 12154, 32646, 30657, 33349, 36464, 42187, 39230, 27897, 25587, 161278, 85438, 115637, 126137, 175516],
+        "CSD": [18888, 16772, 32850, 32262, 39938, 30720, 39003, 30319, 24320, 25405, 98315, 53719, 84687, 86971, 153926, 167900]
+    };
+
+    const girlsCutoffData = {
+        "CIV": [61598, 140795, 120345, 175856, 0, 143084, 0, 169614, 156667],
+        "EEE": [52386, 92347, 112127, 86127, 0, 53878, 142592, 173276, 0],
+        "MEC": [79761, 120931, 170354, 124589, 0, 150668, 0, 162121, 177112],
+        "ECE": [26547, 40060, 34771, 38304, 0, 28569, 58614, 116032, 177852],
+        "CSE": [12108, 25518, 19841, 29956, 31266, 16870, 57037, 87060, 117889],
+        "INF": [26994, 37782, 47979, 57703, 0, 31990, 117939, 117294, 155459],
+        "ECM": [19474, 56758, 54887, 133684, 0, 32120, 116699, 139174, 162512],
+        "AID": [16265, 27973, 47337, 57784, 84071, 26034, 130344, 127823, 128845],
+        "CAI": [13385, 23480, 48154, 47436, 22069, 103194, 121492],
+        "CSC": [12154, 30657, 36464, 39230, 0, 25587, 0, 115637, 175516],
+        "CSD": [16772, 32262, 30720, 30319, 0, 25405, 53719, 86971, 167900]
+    };
+
+    const intakeData = {
+        "CIV": [84, 1, 12, 9, 106],
+        "EEE": [91, 0, 33, 19, 143],
+        "MEC": [139, 4, 53, 5, 201],
+        "ECE": [183, 4, 70, 0, 257],
+        "CSE": [325, 4, 120, 1, 450],
+        "INF": [138, 0, 52, 0, 190],
+        "ECM": [46, 1, 18, 0, 65],
+        "AID": [142, 2, 54, 0, 198],
+        "CAI": [141, 2, 51, 0, 194],
+        "CSC": [92, 0, 31, 0, 123],
+        "CSD": [94, 1, 31, 0, 126]
+    };
+
+    let myChart;
+
+    function updateGraph() {
+        const selectedBranch = document.querySelector('input[name="branch"]:checked')?.value;
+        const dataType = document.querySelector('input[name="dataType"]:checked').value;
+
+        if (dataType !== "highestSeats" && !selectedBranch) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            return;
+        }
+
+        let dataValues = [];
+        let labels = [];
+
+        if (dataType === "cutoff") {
+            const boysData = cutoffData[selectedBranch];
+            const girlsData = girlsCutoffData[selectedBranch] || [];
+            const paddedGirlsData = girlsData.concat(new Array(9 - girlsData.length).fill(0));
+            dataValues = boysData.concat(paddedGirlsData);
+            labels = [
+                'OC Boys', 'OC Girls', 'EWS Boys', 'EWS Girls',
+                'BC-A Boys', 'BC-A Girls', 'BC-B Boys', 'BC-B Girls',
+                'BC-C Boys', 'BC-C Girls', 'BC-D Boys', 'BC-D Girls',
+                'BC-E Boys', 'BC-E Girls', 'SC Boys', 'SC Girls',
+                'ST Boys', 'ST Girls'
+            ];
+        } else if (dataType === "girlsCutoff") {
+            dataValues = girlsCutoffData[selectedBranch];
+            labels = [
+                'OC Girls', 'EWS Girls', 'BC-A Girls', 'BC-B Girls',
+                'BC-C Girls', 'BC-D Girls', 'BC-E Girls', 'SC Girls',
+                'ST Girls'
+            ];
+        } else if (dataType === "intake") {
+            dataValues = [intakeData[selectedBranch][4]]; // Only the total seats (last value)
+            labels = [`Total Seats (${selectedBranch})`]; // Single label with branch name
+        } else if (dataType === "highestSeats") {
+            const totalIntake = {};
+            for (const branch in intakeData) {
+                totalIntake[branch] = intakeData[branch][4]; // Use the total seats value
+            }
+            const sortedBranches = Object.keys(totalIntake).sort((a, b) => totalIntake[b] - totalIntake[a]);
+            labels = sortedBranches;
+            dataValues = sortedBranches.map(branch => totalIntake[branch]);
+        }
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: dataType === "cutoff" ? 'Cutoff Ranks' : 
+                           (dataType === "girlsCutoff" ? "Girls' Cutoff Ranks" : 
+                           (dataType === "intake" ? 'Total Seat Intake' : 'Total Number of Seats')),
+                    data: dataValues,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: dataType.includes('cutoff') ? 'Cutoff Rank' : 'Number of Seats'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: dataType === "highestSeats" ? 'Branches' : 'Categories'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function checkEligibility() {
+        const rank = parseInt(document.getElementById('userRank').value);
+        const category = document.getElementById('userCategory').value;
+        const gender = document.getElementById('userGender').value;
+
+        if (isNaN(rank)) {
+            document.getElementById('eligibilityResult').innerText = 'Please enter a valid rank.';
+            return;
+        }
+
+        const categoryIndex = {
+            "OC": 0, "EWS": 2, "BC-A": 4, "BC-B": 6,
+            "BC-C": 8, "BC-D": 10, "BC-E": 12,
+            "SC": 14, "ST": 16
+        };
+
+        let index = categoryIndex[category];
+        if (gender === "Girl") index += 1;
+
+        const eligibleBranches = [];
+        for (const branch in cutoffData) {
+            const cutoff = cutoffData[branch][index];
+            if (cutoff && rank <= cutoff) {
+                eligibleBranches.push(branch);
+            }
+        }
+
+        const resultDiv = document.getElementById('eligibilityResult');
+        if (eligibleBranches.length > 0) {
+            resultDiv.innerHTML = `🎯 Eligible Branches for Rank ${rank} [${category}, ${gender}]:<br><br>` + eligibleBranches.join(", ");
+        } else {
+            resultDiv.innerText = `❌ No eligible branches for Rank ${rank} in ${category} (${gender}).`;
+        }
+    }
+
+    window.onload = function() {
+        updateGraph();
+    };
+</script>
+</body>
+</html>

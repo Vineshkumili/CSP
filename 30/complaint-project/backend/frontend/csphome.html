@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vignan virtual assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(-45deg, #4f46e5, #0f766e, #334155, #1e293b);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes scrollNews {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .scrolling-news {
+      white-space: nowrap;
+      display: inline-block;
+      animation: scrollNews 20s linear infinite;
+    }
+
+    .carousel-img {
+      width: 100%;
+      height: 450px;
+      object-fit: contain;
+      background-color: #f3f4f6;
+      position: absolute;
+      top: 0;
+      left: 100%;
+      opacity: 0;
+      transition: all 0.8s ease-in-out;
+      border-radius: 12px;
+    }
+
+    .carousel-img.active {
+      left: 0;
+      opacity: 1;
+      z-index: 10;
+    }
+
+    .circular-img {
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body class="text-white font-sans">
+  <!-- Header Section -->
+  <section class="text-center py-6 px-4">
+    <div class="flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-sky-100 via-emerald-100 to-lime-100 text-black p-4 rounded-lg shadow-lg">
+      <img src="https://www.vidyavision.com/CollegeUploads/Logos/2016-09-6-06-44-05_vignanlogo.png" alt="Vignan Logo" class="circular-img"/>
+      <div class="text-center">
+        <h1 class="text-2xl font-bold">VIGNAN'S INSTITUTE OF INFORMATION TECHNOLOGY</h1>
+        <h2 class="text-xl mt-1 text-indigo-700 font-semibold">AI AFFIRMATION PLEDGE</h2>
+        <p class="mt-2 italic">“We pledge to position India as a Vishwa Guru in AI, leading innovation, ethics, and education.”</p>
+      </div>
+      <img src="images/rat.jpg" alt="Chairman" class="circular-img"/>
+    </div>
+  </section>
+
+  <!-- Accreditation Logos -->
+  <div class="flex justify-center items-center space-x-6 bg-gradient-to-r from-cyan-100 via-blue-200 to-indigo-100 py-3 rounded-lg mb-6 shadow">
+    <img src="images/naac.jpg" alt="NAAC" class="h-12">
+    <img src="images/nba.jpg" alt="NBA" class="h-12">
+    <img src="https://www.aicte-india.org/sites/default/files/logo_new.png" alt="AICTE" class="h-12">
+  </div>
+
+  <!-- Carousel + Side Buttons -->
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-center w-11/12 mx-auto gap-6">
+    <!-- Side Buttons -->
+    <div class="space-y-8 w-full md:w-1/4 flex flex-col items-center">
+      <!-- Chatbot -->
+      <div class="bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-black w-48 h-48 rounded-full flex flex-col justify-center items-center shadow-2xl hover:scale-110 transition duration-300">
+        <img src="images/im2.jpg" class="w-10 mb-2" />
+        <p class="font-bold text-base">Chat bot</p>
+        <button onclick="location.href='chatbot.html'" class="mt-2 px-4 py-1 bg-pink-600 text-white text-sm rounded-full hover:bg-pink-800">Cilck</button>
+      </div>
+      
+      <!-- Eligibility -->
+      <div class="bg-gradient-to-br from-indigo-100 via-sky-200 to-cyan-100 text-black w-48 h-48 rounded-full flex flex-col justify-center items-center shadow-2xl hover:scale-110 transition duration-300">
+        <img src="https://img.icons8.com/ios-filled/50/news.png" class="w-10 mb-2" />
+        <p class="font-bold text-base">Eligibility</p>
+        <button onclick="document.location='Eligibility.html'" class="mt-2 px-4 py-1 bg-pink-600 text-white text-sm rounded-full hover:bg-pink-800">Check</button>     
+     </div>
+      
+      <!-- Complaints -->
+      <div class="bg-gradient-to-br from-teal-100 via-lime-100 to-yellow-100 text-black w-48 h-48 rounded-full flex flex-col justify-center items-center shadow-2xl hover:scale-110 transition duration-300">
+        <img src="images/im1.jpg" class="w-10 mb-2" />
+        <p class="font-bold text-base">Complaints</p>
+        <button onclick="document.location='complaints.html'" class="mt-2 px-4 py-1 bg-pink-600 text-white text-sm rounded-full hover:bg-pink-800">Cilck</button>
+      </div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="relative w-full md:w-2/3 h-[450px] overflow-hidden bg-white p-4 rounded-xl shadow-lg">
+      <img class="carousel-img active" src="images/cognant.jpg">
+      <img class="carousel-img" src="images/dhashara.jpg">
+      <img class="carousel-img" src="images/hackathon.jpg">
+      <img class="carousel-img" src="images/inncircles.jpg">
+      <img class="carousel-img" src="images/ram.jpg">
+    </div>
+  </div>
+
+  <!-- Latest News -->
+  <div class="w-11/12 mx-auto bg-sky-900 text-white py-2 px-4 rounded-lg my-8">
+    <div class="flex items-center space-x-4">
+      <p class="text-xl font-bold text-white">📣 Latest News:</p>
+      <div class="w-full overflow-hidden">
+        <div class="scrolling-news text-white text-lg font-bold">
+          🎉 Vignan ranked among top engineering colleges. | 📢 New AI/ML courses launched! | 🏅 5-star accreditation for education quality. | 🎓 National Hackathon scheduled in June! |
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#1e293b] text-white py-10 mt-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-center mb-6">📘 Departments & Coordinators</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">ECE</h3>
+          <p class="text-sm text-gray-300">Dr. Nalini, Avinash</p>
+          <p class="text-sm text-gray-300">7569099848</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">EEE</h3>
+          <p class="text-sm text-gray-300">Vishala</p>
+          <p class="text-sm text-gray-300">9030364514</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">CSE</h3>
+          <p class="text-sm text-gray-300">Dr. Salini</p>
+          <p class="text-sm text-gray-300">9948803073</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">ACSE</h3>
+          <p class="text-sm text-gray-300">Dr. Salini</p>
+          <p class="text-sm text-gray-300">8121169999</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">IT</h3>
+          <p class="text-sm text-gray-300">Jayalakshmi</p>
+          <p class="text-sm text-gray-300">7780733243</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">BS&H</h3>
+          <p class="text-sm text-gray-300">Ramapalanai du</p>
+          <p class="text-sm text-gray-300">9391504060</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">Mech</h3>
+          <p class="text-sm text-gray-300">Hemanth</p>
+          <p class="text-sm text-gray-300">9052450474</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">AI&DS</h3>
+          <p class="text-sm text-gray-300">Pramila</p>
+          <p class="text-sm text-gray-300">9701296324</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">ECM</h3>
+          <p class="text-sm text-gray-300">Dr. P. Santosh (Media Cell Incharge)</p>
+          <p class="text-sm text-gray-300">9885851820</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">MBA</h3>
+          <p class="text-sm text-gray-300">Mrs. Aditi Dutta</p>
+          <p class="text-sm text-gray-300">8688216627</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">MCA</h3>
+          <p class="text-sm text-gray-300">Ms. Lekha</p>
+          <p class="text-sm text-gray-300">9963591060</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-yellow-300">CE</h3>
+          <p class="text-sm text-gray-300">Ms. Sandhya</p>
+          <p class="text-sm text-gray-300">7386280880</p>
+        </div>
+      </div>
+      <div class="mt-8 text-center text-sm text-slate-400">
+        © 2025 Vignan's Institute | Crafted with ❤ by Team VIIT Events
+      </div>
+    </div>
+  </footer>
+
+  <!-- Carousel JavaScript -->
+  <script>
+    const images = document.querySelectorAll('.carousel-img');
+    let current = 0;
+
+    function showSlide(index) {
+      images.forEach((img, i) => {
+        img.classList.remove('active');
+        img.style.left = '100%';
+        img.style.opacity = 0;
+      });
+
+      images[index].classList.add('active');
+      images[index].style.left = '0';
+      images[index].style.opacity = 1;
+    }
+
+    function nextSlide() {
+      current = (current + 1) % images.length;
+      showSlide(current);
+    }
+
+    showSlide(current);
+    setInterval(nextSlide, 3000);
+  </script>
+</body>
+</html>
