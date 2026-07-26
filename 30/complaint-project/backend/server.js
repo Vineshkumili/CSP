@@ -19,6 +19,15 @@ app.use(express.json());
 // Serve static images from /uploads
 app.use('/uploads', express.static('uploads'));
 
+// Serve static frontend files
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Default route to load home page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/csphome.html'));
+});
+
 // Use complaints route
 app.use('/api/complaints', complaintRoutes);
 
