@@ -51,10 +51,11 @@ router.post('/', upload.single('image'), async (req, res) => {
     let emailStatus = 'skipped';
     const emailUser = (process.env.EMAIL || '').trim();
     const emailPass = (process.env.APP_PASSWORD || '').trim();
+    const receiverEmail = (process.env.RECEIVER_EMAIL || 'vineshkumili55@gmail.com').trim();
 
     if (emailUser && emailPass) {
       try {
-        console.log(`Attempting to send email from ${emailUser} to ${emailUser}...`);
+        console.log(`Attempting to send email from ${emailUser} to ${receiverEmail}...`);
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -70,7 +71,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
         const mailOptions = {
           from: emailUser,
-          to: emailUser,
+          to: receiverEmail,
           subject: 'New Complaint Submitted',
           text: `A new complaint was submitted.
 
