@@ -550,13 +550,7 @@
 
           // Show confirmation alert
           setTimeout(() => {
-            if (result.emailStatus === 'sent') {
-              alert("✅ Complaint submitted successfully!\n📧 Email notification sent!");
-            } else if (result.emailStatus && result.emailStatus.startsWith('failed')) {
-              alert("✅ Complaint saved to database!\n⚠️ Email notice: " + result.emailStatus);
-            } else {
-              alert("✅ Complaint submitted successfully!");
-            }
+            alert("✅ Complaint submitted successfully!");
           }, 500);
         } else {
           const errorText = await response.text();
