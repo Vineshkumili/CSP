@@ -530,6 +530,9 @@
         typingIndicator.remove();
 
         if (response.ok) {
+          const result = await response.json();
+          console.log("Complaint submission result:", result);
+
           // Show success message
           const successMsg = document.createElement("div");
           successMsg.className = "success-message";
@@ -547,7 +550,13 @@
 
           // Show confirmation alert
           setTimeout(() => {
-            alert("✅ Complaint submitted successfully!");
+            if (result.emailStatus === 'sent') {
+              alert("✅ Complaint submitted successfully!\n📧 Email notification sent!");
+            } else if (result.emailStatus && result.emailStatus.startsWith('failed')) {
+              alert("✅ Complaint saved to database!\n⚠️ Email notice: " + result.emailStatus);
+            } else {
+              alert("✅ Complaint submitted successfully!");
+            }
           }, 500);
         } else {
           const errorText = await response.text();

@@ -49,21 +49,30 @@ router.post('/', upload.single('image'), async (req, res) => {
 
     // Send email notification if credentials are present
     let emailStatus = 'skipped';
-    if (process.env.EMAIL && process.env.APP_PASSWORD) {
+    const emailUser = (process.env.EMAIL || '').trim();
+    const emailPass = (process.env.APP_PASSWORD || '').trim();
+
+    if (emailUser && emailPass) {
       try {
+        console.log(`Attempting to send email from ${emailUser} to ${emailUser}...`);
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
           auth: {
-            user: process.env.EMAIL,
-            pass: process.env.APP_PASSWORD
+            user: emailUser,
+            pass: emailPass
+          },
+          tls: {
+            rejectUnauthorized: false
           }
         });
 
         const imagePath = proofImage ? path.join(uploadDir, proofImage) : null;
 
         const mailOptions = {
-          from: process.env.EMAIL,
-          to: process.env.EMAIL,
+          from: emailUser,
+          to: emailUser,
           subject: 'New Complaint Submitted',
           text: `A new complaint was submitted.
 
@@ -76,12 +85,15 @@ Image Attached: ${proofImage ? 'Yes' : 'No'}`,
           }] : []
         };
 
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
+        console.log('✅ Email sent successfully! MessageId:', info.messageId);
         emailStatus = 'sent';
       } catch (emailError) {
-        console.error('Email sending failed:', emailError);
+        console.error('❌ Email sending failed:', emailError.message);
         emailStatus = `failed (${emailError.message})`;
       }
+    } else {
+      console.log('⚠️ Email notification skipped: EMAIL or APP_PASSWORD missing.');
     }
 
     // Respond to frontend
