@@ -6,9 +6,20 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Multer setup for file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
@@ -28,42 +39,51 @@ router.post('/', upload.single('image'), async (req, res) => {
 
     await newComplaint.save();
 
-    // Email configuration using dotenv variables
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.APP_PASSWORD
-      }
-    });
+    // Send email notification if credentials are present
+    let emailStatus = 'skipped';
+    if (process.env.EMAIL && process.env.APP_PASSWORD) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL,
+            pass: process.env.APP_PASSWORD
+          }
+        });
 
-    // Attachment path
-    const imagePath = proofImage ? path.join(__dirname, '..', 'uploads', proofImage) : null;
+        const imagePath = proofImage ? path.join(uploadDir, proofImage) : null;
 
-    // Email options
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: process.env.EMAIL, // Or any recipient
-      subject: 'New Complaint Submitted',
-      text: `A new complaint was submitted.
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: process.env.EMAIL,
+          subject: 'New Complaint Submitted',
+          text: `A new complaint was submitted.
 
 Category: ${category}
 Description: ${description}
 Image Attached: ${proofImage ? 'Yes' : 'No'}`,
-      attachments: proofImage ? [{
-        filename: proofImage,
-        path: imagePath
-      }] : []
-    };
+          attachments: proofImage && fs.existsSync(imagePath) ? [{
+            filename: proofImage,
+            path: imagePath
+          }] : []
+        };
 
-    // Send the email
-    await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
+        emailStatus = 'sent';
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        emailStatus = `failed (${emailError.message})`;
+      }
+    }
 
     // Respond to frontend
-    res.status(201).json({ message: 'Complaint saved and email sent successfully' });
+    res.status(201).json({ 
+      message: 'Complaint saved successfully!',
+      emailStatus: emailStatus
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to save complaint or send email' });
+    console.error('Complaint save error:', err);
+    res.status(500).json({ error: 'Failed to save complaint: ' + err.message });
   }
 });
 
