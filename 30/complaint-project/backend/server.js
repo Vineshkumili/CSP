@@ -32,9 +32,17 @@ app.get('/', (req, res) => {
 app.use('/api/complaints', complaintRoutes);
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+if (!process.env.MONGO_URI) {
+  console.error("❌ CRITICAL ERROR: MONGO_URI environment variable is missing!");
+} else {
+  console.log("Connecting to MongoDB Atlas...");
+}
+
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000
+})
+  .then(() => console.log('✅ MongoDB connected successfully'))
+  .catch(err => console.error('❌ MongoDB connection error:', err.message));
 
 // Start the server
 const PORT = process.env.PORT || 5000;

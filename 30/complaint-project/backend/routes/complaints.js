@@ -27,6 +27,13 @@ const upload = multer({ storage });
 // POST complaint route
 router.post('/', upload.single('image'), async (req, res) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({
+        error: `Database is not connected (readyState=${mongoose.connection.readyState}). Please check MONGO_URI in Render Environment variables.`
+      });
+    }
+
     const { category, description } = req.body;
     const proofImage = req.file ? req.file.filename : null;
 
