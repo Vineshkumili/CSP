@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Complaint = require('../models/Complaint');
 const multer = require('multer');
 const path = require('path');
